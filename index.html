@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+    <html lang="en">
+        
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="modal.css">
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <title>Task List</title>
+    </head>
+
+    <body>
+        <div class="container w3-container">
+            <div class="row">
+                <div class="col-12">
+                    <h1>Tasks</h1>
+                    <p>Found 4 tasks</p>
+
+                    <!-- Trigger/Open The Modal -->
+                    <button id="newTask">New task</button>
+                    <!-- The Modal -->
+                    <div id="modal" class="modal">
+                        <!-- Modal content -->
+                        <div class="modal-content">
+                            <span id="close">&times;</span>
+
+                            <form class="w3-form">
+                                <label for="title">Title:</label>
+                                <input type="text" id="title" name="title"><br><br>
+                                <label for="status">Status</label>
+                                <select name="status" id="status">
+                                    <option value="active">Active</option>
+                                    <option value="done">Done</option>
+                                    <option value="waiting">Waiting</option>
+                                </select>
+                                <br><br>
+                                <button type="submit" value="Submit" id="addTask">Add task</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <table class="w3-table">
+                        <tbody id="taskList">
+                            <tr>
+                                <th>Task</th>
+                                <th>Status</th>
+                                <th>Modify</th>
+                                <th>Remove</th>
+                            </tr>
+                            <tr>
+                                <td>task 1</td>
+                                <td>Active</td>
+                                <td><button>Modify</button></td>
+                                <td id="removeTask"><button>Remove</button></td>
+                            </tr>
+                            <tr>
+                                <td>task 2</td>
+                                <td>Done</td>
+                                <td><button>Modify</button></td>
+                                <td id="removeTask"><button>Remove</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </body>
+
+    <script src="modal.js"></script>
+
+</html>
