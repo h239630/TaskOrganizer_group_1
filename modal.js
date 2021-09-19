@@ -2,7 +2,8 @@ var taskList = document.getElementById("taskList");
 var modal = document.getElementById("modal");
 var newTask = document.getElementById("newTask");
 var addTask = document.getElementById("addTask");
-var removeTask = document.getElementById("removeTask");
+var updateTask = document.getElementById("updateTask");
+/* var removeTask = document.getElementById("removeTask"); */
 /* var removeTask = document.querySelectorAll("#removeTask"); */
 var close = document.getElementById("close");
 var title = document.getElementById("title");
@@ -10,6 +11,8 @@ var option = document.getElementById("status");
 
 // Open modal
 newTask.onclick = function() {
+  addTask.style.display = "block";
+  updateTask.style.display = "none";
   modal.style.display = "block";
 }
 
@@ -33,8 +36,6 @@ addTask.onclick = function(e) {
     return alert('Add title');
   }
 
-  console.log(status);
-
   if (status === '') {
     return alert('Add status');
   }
@@ -48,7 +49,8 @@ addTask.onclick = function(e) {
   tdTitle.appendChild(document.createTextNode(title.value));
   tdStatus.appendChild(document.createTextNode(status));
 
-  tdRemove.setAttribute("id", "removeTask");
+  tdModify.setAttribute("class", "modifyTask")
+  tdRemove.setAttribute("class", "removeTask");
 
   tdModify.innerHTML = '<button>Modify</button>';
   tdRemove.innerHTML = '<button>Remove</button>';
@@ -71,24 +73,50 @@ addTask.onclick = function(e) {
 }
 
 // Remove Task
-removeTask.onclick = function(e) {
-  console.log(e)
-  if (confirm('Are You Sure?')) {
-    e.target.parentElement.parentElement.remove();
-  }
-  /* if (e.target.parentElement.classList.contains('removeTask')) {
-    if (confirm('Are You Sure?')) {
-        e.target.parentElement.parentElement.remove();
-    }
-  } */
+loadRemoveTask();
+
+function loadRemoveTask() {
+  taskList.addEventListener('click', removeTask);
 }
 
-/* removeTask.addEventListener('click', deleteTask);
-
-function deleteTask(e) {
+function removeTask(e) {
   if (e.target.parentElement.classList.contains('removeTask')) {
       if (confirm('Are You Sure?')) {
           e.target.parentElement.parentElement.remove();
       }
   }
-} */
+}
+
+// Modify Task
+loadModifyTask();
+
+function loadModifyTask() {
+  taskList.addEventListener('click', modifyTask);
+}
+
+function modifyTask(e) {
+  if (e.target.parentElement.classList.contains('modifyTask')) {
+    var tr = e.target.parentElement.parentElement;
+    var taskTitle = tr.getElementsByTagName("td")[0].textContent;
+    var taskStatus = tr.getElementsByTagName("td")[1].textContent;
+    addTask.style.display = "none";
+    updateTask.style.display = "block";
+    modal.style.display = "block";
+    title.value = taskTitle;
+    option.options[option.selectedIndex].text = taskStatus;
+    /* option.options[option.selectedIndex] = taskStatus; */
+    
+    loadUpdateTask();
+    function loadUpdateTask() {
+      updateTask.addEventListener('click', submitChange);
+    }
+
+    function submitChange(event) {
+      tr.getElementsByTagName("td")[0].innerText = title.value;
+      tr.getElementsByTagName("td")[1].innerText = option.options[option.selectedIndex].value;
+      modal.style.display = "none";
+      event.preventDefault();
+    }
+  }
+  e.preventDefault();
+}
