@@ -1,3 +1,26 @@
+/**
+ * <p>Object with configurations. Currently, the only parameter is the URL of OrganizerServices.</p>
+ *
+ * @author Bjarte Kileng
+ */
+const config = {
+    /**
+     * <p>The top URL of the services of Mservices, relative to the application. The services will be:</p>
+     * <ul>
+     * <li>GET `${config.servicesPath}/updates/${loggId}`</li>
+     * <li>DELETE `${config.servicesPath}/member/${memberId}`</li>
+     * <li>POST `${config.servicesPath}/member/`</li>
+     * <li>PUT `${config.servicesPath}/member/${memberId}`</li>
+     * </ul>
+     *
+     * @readonly
+     * @type {String}
+     */
+    servicesPath: '../TaskServices/api/services'
+}
+
+
+
 class TaskList extends HTMLElement {
 
 	constructor() {
@@ -118,6 +141,36 @@ class TaskList extends HTMLElement {
     
 
         `;
+		window.onload = (e) => {
+			fetch(`${config.servicesPath}/tasklist`,{method: "GET"})
+			.then(reponse => reponse.json())
+			 .then(data => {
+			      data.tasks.forEach(task => {
+				 var taskList = this.shadow.getElementById("taskList");
+			      var tr = document.createElement('tr');
+			      const tdTitle = document.createElement('td');
+			      const tdStatus = document.createElement('td');
+			      const tdModify = document.createElement('td');
+			      const tdRemove = document.createElement('td');
+			
+			      tdTitle.appendChild(document.createTextNode(task.title));
+			      tdStatus.appendChild(document.createTextNode(task.status));
+			
+			      tdModify.setAttribute("class", "modifyTask")
+			      tdRemove.setAttribute("class", "removeTask");
+			    
+			      tdModify.innerHTML = '<button>Modify</button>';
+			      tdRemove.innerHTML = '<button>Remove</button>';
+			
+			      tr.appendChild(tdTitle);
+			      tr.appendChild(tdStatus);
+			      tr.appendChild(tdModify);
+			      tr.appendChild(tdRemove);
+			
+			      taskList.appendChild(tr);
+			  });
+			})
+		};
 		const wrapper = document.createElement('div');
 		wrapper.insertAdjacentHTML('beforeend', content);
 		this.shadow.appendChild(wrapper);
@@ -125,7 +178,7 @@ class TaskList extends HTMLElement {
 	}
 	
 	_modal() {
-		var taskList = this.shadow.getElementById("taskList");
+		
 		var modal = this.shadow.getElementById("modal");
 		var newTask = this.shadow.getElementById("newTask");
 		var addTask = this.shadow.getElementById("addTask");
@@ -135,6 +188,7 @@ class TaskList extends HTMLElement {
 		var close = this.shadow.getElementById("close");
 		var title = this.shadow.getElementById("title");
 		var option = this.shadow.getElementById("status");
+		
 		
 		// Open modal
 		newTask.onclick = function() {
@@ -249,6 +303,8 @@ class TaskList extends HTMLElement {
 		}
 	}
 	
+	
+
 }
 
 
