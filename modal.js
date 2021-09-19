@@ -3,11 +3,40 @@ var modal = document.getElementById("modal");
 var newTask = document.getElementById("newTask");
 var addTask = document.getElementById("addTask");
 var updateTask = document.getElementById("updateTask");
-/* var removeTask = document.getElementById("removeTask"); */
-/* var removeTask = document.querySelectorAll("#removeTask"); */
 var close = document.getElementById("close");
 var title = document.getElementById("title");
 var option = document.getElementById("status");
+
+// Get tasks
+window.addEventListener('load', (e) => {
+  fetch('https://jsonplaceholder.typicode.com/posts')
+  .then(response => response.json())
+  .then(data => {
+    data.forEach(task => {
+      var tr = document.createElement('tr');
+      const tdTitle = document.createElement('td');
+      const tdStatus = document.createElement('td');
+      const tdModify = document.createElement('td');
+      const tdRemove = document.createElement('td');
+
+      tdTitle.appendChild(document.createTextNode(task.id));
+      tdStatus.appendChild(document.createTextNode(task.title));
+
+      tdModify.setAttribute("class", "modifyTask")
+      tdRemove.setAttribute("class", "removeTask");
+    
+      tdModify.innerHTML = '<button>Modify</button>';
+      tdRemove.innerHTML = '<button>Remove</button>';
+
+      tr.appendChild(tdTitle);
+      tr.appendChild(tdStatus);
+      tr.appendChild(tdModify);
+      tr.appendChild(tdRemove);
+
+      taskList.appendChild(tr);
+    });
+  })
+});
 
 // Open modal
 newTask.onclick = function() {
