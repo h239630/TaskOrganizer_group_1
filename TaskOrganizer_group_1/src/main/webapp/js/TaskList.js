@@ -19,6 +19,154 @@ const config = {
     servicesPath: '../TaskServices/api/services'
 }
 
+const basePath = () => `http://${window.location.host}/TaskServices/api/services`;
+
+function aPathHandler (subpath) {
+    return basePath + "/" + subpath;
+}
+
+const pathHandler = subPath => `${basePath()}/${subPath}`;
+
+//While the last two paths are not exactly neccessary, they were added so that if these path locations were updated later, the methods need not be changed. Just the const.
+const API_PATHS = {
+    GET_STATUSES: pathHandler("allstatuses"),
+    GET_TASK_LIST: pathHandler("tasklist"),
+    POST_TASK: pathHandler("task"),
+    PUT_TASK: pathHandler("task"),
+    DELTE_TASK: pathHandler("task"),
+}
+
+const dataRequest = async (url, fetchConfig, body) => {
+    if (body) {
+        fetchConfig.body = JSON.stringify(body);
+        fetchConfig.headers = {"Content-type": "application/json"};
+    }
+
+    try {
+        const response = await fetch(url, fetchConfig);
+		if (!response.ok) {
+			console.log("Failed to fetch at: " + url);
+		}
+        return await response.json();
+    } catch (e) {
+        console.error(e)
+    }
+}
+
+const getRequest = async url => {
+    const fetchConfig = {
+        method: "GET",
+    };
+
+    return await dataRequest(url, fetchConfig);
+};
+
+const postRequest = async (url, body) => {
+    const fetchConfig = {
+        method: "POST",
+    };
+
+    return await dataRequest(url, fetchConfig, body)
+}
+
+const putRequest = async (url, body) => {
+    const fetchConfig = {
+        method: "PUT",
+    }
+
+    return await dataRequest(url, fetchConfig, body)
+}
+
+const deleteRequest = async url => {
+    const fetchConfig = {
+        method: "DELETE",
+    }
+
+    return await dataRequest(url, fetchConfig);
+}
+
+function getStatuses () {
+    return getRequest(API_PATHS.GET_STATUSES);
+}
+
+function getTaskList () {
+    return getRequest(API_PATHS.GET_TASK_LIST);
+}
+
+/** 
+ * 
+ * 
+ * postTask trenger et objekt som ser slikt ut
+{status: "WAITING", title: "Paint roof"}
+*/
+
+async function postTask (task) {
+    await postRequest(API_PATHS.POST_TASK, task);
+
+}
+
+/**
+ * Status is a object with a structure like this:
+ * { status: "STATUS_ENUM_HERE" }
+ */
+async function updateTask (id, status) {
+    const url = `${API_PATHS.PUT_TASK}/${id}`
+    await putRequest(url, status);
+    
+}
+
+async function deleteTask (id)  {
+    const url = `${API_PATHS.DELTE_TASK}/${id}`
+    await deleteRequest(url, status);
+}
+
+//All the server statuses gets saved here.
+let statuses;
+
+window.modifyTask = {};
+window.deleteTaskById = {};
+window.fetchTasks = () => null;
+
+function taskAdder(task, taskList) {
+    let tr = document.createElement('tr');
+    const tdTitle = document.createElement('td');
+    const tdStatus = document.createElement('td');
+    const tdModify = document.createElement('td');
+    const tdRemove = document.createElement('td');  
+
+    tdTitle.appendChild(document.createTextNode(task.id));
+    tdStatus.appendChild(document.createTextNode(task.title));  
+
+    tdModify.setAttribute("class", "modifyTask")
+    tdRemove.setAttribute("class", "removeTask"); 
+
+	window.modifyTask[task.id] = () => {
+		/**
+		 * write modify functionality here. 
+		 * Åpne en modal med de forskjellige statusene, bruk updateTask
+		 * 
+		 * 
+		 * Denne går på slutten av modify og new task. Den tømmer listen og oppdater fra databasen
+		 * window.fetchTasks();
+		 * */
+		 window.fetchTasks();
+	}
+
+	window.deleteTaskById[task.id] = async () => {
+		await deleteTask(task.id);
+		window.fetchTasks();
+	}
+
+    tdModify.innerHTML = `<button onClick="window.modifyTask[${task.id}]()">Modify</button>`;
+    tdRemove.innerHTML = `<button onClick="window.deleteTaskById[${task.id}]()">Remove</button>`; 
+
+    tr.appendChild(tdTitle);
+    tr.appendChild(tdStatus);
+    tr.appendChild(tdModify);
+    tr.appendChild(tdRemove); 
+
+    taskList.appendChild(tr);
+}
 
 
 class TaskList extends HTMLElement {
@@ -141,8 +289,21 @@ class TaskList extends HTMLElement {
     
 
         `;
-		window.onload = (e) => {
-			fetch(`${config.servicesPath}/tasklist`,{method: "GET"})
+
+		window.fetchTasks = async () => {
+			const response = await getTaskList();
+			var taskList = this.shadow.getElementById("taskList");
+			taskList.innerHTML = "";
+			response.tasks.forEach(task => taskAdder(task, taskList));
+		}
+
+
+		window.onload = async (e) => {
+			statuses = await getStatuses();
+			window.fetchTasks();
+
+			/**
+			 * fetch(`${config.servicesPath}/tasklist`,{method: "GET"})
 			.then(reponse => reponse.json())
 			 .then(data => {
 			      data.tasks.forEach(task => {
@@ -170,6 +331,7 @@ class TaskList extends HTMLElement {
 			      taskList.appendChild(tr);
 			  });
 			})
+			 */
 		};
 		const wrapper = document.createElement('div');
 		wrapper.insertAdjacentHTML('beforeend', content);
