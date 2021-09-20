@@ -1,5 +1,7 @@
 "use strict"
 
+// Skallet av en kontroller klasse, denne må fylles ut
+
 enableaddtask()
 {
 	const tasklist = document.querySelector("task-list");

@@ -1,23 +1,7 @@
-/**
- * <p>Object with configurations. Currently, the only parameter is the URL of OrganizerServices.</p>
- *
- * @author Bjarte Kileng
- */
-const config = {
-    /**
-     * <p>The top URL of the services of Mservices, relative to the application. The services will be:</p>
-     * <ul>
-     * <li>GET `${config.servicesPath}/updates/${loggId}`</li>
-     * <li>DELETE `${config.servicesPath}/member/${memberId}`</li>
-     * <li>POST `${config.servicesPath}/member/`</li>
-     * <li>PUT `${config.servicesPath}/member/${memberId}`</li>
-     * </ul>
-     *
-     * @readonly
-     * @type {String}
-     */
-    servicesPath: '../TaskServices/api/services'
-}
+
+
+// ---- Denne delen av koden skulle vært i egen klasse men vi kom ikke så langt til at vi fant ut av det ------- 
+
 
 const basePath = () => `http://${window.location.host}/TaskServices/api/services`;
 
@@ -27,7 +11,8 @@ function aPathHandler (subpath) {
 
 const pathHandler = subPath => `${basePath()}/${subPath}`;
 
-//While the last two paths are not exactly neccessary, they were added so that if these path locations were updated later, the methods need not be changed. Just the const.
+// While the last two paths are not exactly neccessary, they were added so that if these path locations were updated later, 
+// the methods need not be changed. Just the const.
 const API_PATHS = {
     GET_STATUSES: pathHandler("allstatuses"),
     GET_TASK_LIST: pathHandler("tasklist"),
@@ -168,6 +153,9 @@ function taskAdder(task, taskList) {
     taskList.appendChild(tr);
 }
 
+// -------------------------------------------------------------------------------------------------------------------------
+
+
 
 class TaskList extends HTMLElement {
 
@@ -181,6 +169,7 @@ class TaskList extends HTMLElement {
 		
 		const bt = this.shadow.querySelector('#newTask');
 		bt.addEventListener('click', this._modal.bind(this));
+		
 	}
 	
 	_createStyle() {
@@ -235,7 +224,7 @@ class TaskList extends HTMLElement {
             <div class="row">
                 <div class="col-12">
                     <h1>Tasks</h1>
-                    <p>Found 4 tasks</p>
+                    <p>Placeholder: "Found 4 tasks"</p>
 
                     <!-- Trigger/Open The Modal -->
                     <button id="newTask">New task</button>
@@ -289,7 +278,6 @@ class TaskList extends HTMLElement {
     
 
         `;
-
 		window.fetchTasks = async () => {
 			const response = await getTaskList();
 			var taskList = this.shadow.getElementById("taskList");
@@ -302,45 +290,18 @@ class TaskList extends HTMLElement {
 			statuses = await getStatuses();
 			window.fetchTasks();
 
-			/**
-			 * fetch(`${config.servicesPath}/tasklist`,{method: "GET"})
-			.then(reponse => reponse.json())
-			 .then(data => {
-			      data.tasks.forEach(task => {
-				 var taskList = this.shadow.getElementById("taskList");
-			      var tr = document.createElement('tr');
-			      const tdTitle = document.createElement('td');
-			      const tdStatus = document.createElement('td');
-			      const tdModify = document.createElement('td');
-			      const tdRemove = document.createElement('td');
-			
-			      tdTitle.appendChild(document.createTextNode(task.title));
-			      tdStatus.appendChild(document.createTextNode(task.status));
-			
-			      tdModify.setAttribute("class", "modifyTask")
-			      tdRemove.setAttribute("class", "removeTask");
-			    
-			      tdModify.innerHTML = '<button>Modify</button>';
-			      tdRemove.innerHTML = '<button>Remove</button>';
-			
-			      tr.appendChild(tdTitle);
-			      tr.appendChild(tdStatus);
-			      tr.appendChild(tdModify);
-			      tr.appendChild(tdRemove);
-			
-			      taskList.appendChild(tr);
-			  });
-			})
-			 */
 		};
+		
 		const wrapper = document.createElement('div');
 		wrapper.insertAdjacentHTML('beforeend', content);
 		this.shadow.appendChild(wrapper);
 		return wrapper;
 	}
 	
+	// Denne metoden er for sammensatt og vi hadde tenkt å dele den opp men vi kom ikke så langt
+	
 	_modal() {
-		
+		var taskList = this.shadow.getElementById("taskList");
 		var modal = this.shadow.getElementById("modal");
 		var newTask = this.shadow.getElementById("newTask");
 		var addTask = this.shadow.getElementById("addTask");
@@ -464,11 +425,8 @@ class TaskList extends HTMLElement {
 		  e.preventDefault();
 		}
 	}
-	
-	
-
 }
 
-
+		
 
 customElements.define('task-list', TaskList);	
